@@ -43,12 +43,13 @@ export default function Home() {
 
   // Função para buscar partes de palavras
   const searchInBible = (transcript) => {
-    const threshold = 2; // Limite de distância para considerar uma correspondência
+    const threshold = 3; // Limite de distância para considerar uma correspondência
     const results = bibleText.filter(entry => {
       const distance = levenshteinDistance(transcript.toLowerCase(), entry.text.toLowerCase());
       return distance <= threshold;
     });
-    
+
+    // Atualiza o resultado
     setResult(results.length > 0 ? results.map(res => `Encontrado: ${res.book} ${res.chapter}:${res.verse} - "${res.text}"`).join('\n') : 'Texto não encontrado.');
   };
 
