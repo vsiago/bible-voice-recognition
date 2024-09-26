@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { useEffect, useState } from 'react';
 import { MicrophoneIcon } from '@heroicons/react/24/outline'; // Importação correta para v2
 
@@ -10,7 +10,10 @@ export default function Home() {
   useEffect(() => {
     fetch('/bible.json')
       .then((response) => response.json())
-      .then((data) => setBibleText(data));
+      .then((data) => {
+        setBibleText(data);
+        console.log('Texto da Bíblia carregado:', data); // Verifica os dados carregados
+      });
   }, []);
 
   useEffect(() => {
@@ -19,8 +22,35 @@ export default function Home() {
     }
   }, [transcript]);
 
-  // Função para calcular a distância de Levenshtein
+  const searchInBible = (transcript) => {
+    console.log('Transcrição recebida:', transcript); // Verifica a transcrição
+    const threshold = 3; // Limite de distância para considerar uma correspondência
+    const results = bibleText.filter(entry => {
+      const distance = levenshteinDistance(transcript.toLowerCase(), entry.text.toLowerCase());
+      console.log(`Comparando "${transcript.toLowerCase()}" com "${entry.text.toLowerCase()}" - Distância: ${distance}`); // Verifica cada comparação
+      return distance <= threshold;
+    });
+
+    // Atualiza o resultado
+    setResult(results.length > 0 ? results.map(res => `Encontrado: ${res.book} ${res.chapter}:${res.verse} - "${res.text}"`).join('\n') : 'Texto não encontrado.');
+  };
+
+  const startRecognition = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.onresult = (event) => {
+      const text = event.results[0][0].transcript;
+      console.log('Transcrição de voz:', text); // Verifica a transcrição de voz
+      setTranscript(text);
+    };
+    recognition.start();
+  };
+
   const levenshteinDistance = (s1, s2) => {
+    if (s1 === s2) return 0; // Se os textos forem iguais
+    if (s1.length === 0) return s2.length; // Se s1 estiver vazio
+    if (s2.length === 0) return s1.length; // Se s2 estiver vazio
+
     const dp = Array(s1.length + 1)
       .fill(null)
       .map(() => Array(s2.length + 1).fill(null));
@@ -39,28 +69,6 @@ export default function Home() {
       }
     }
     return dp[s1.length][s2.length];
-  };
-
-  // Função para buscar partes de palavras
-  const searchInBible = (transcript) => {
-    const threshold = 3; // Limite de distância para considerar uma correspondência
-    const results = bibleText.filter(entry => {
-      const distance = levenshteinDistance(transcript.toLowerCase(), entry.text.toLowerCase());
-      return distance <= threshold;
-    });
-
-    // Atualiza o resultado
-    setResult(results.length > 0 ? results.map(res => `Encontrado: ${res.book} ${res.chapter}:${res.verse} - "${res.text}"`).join('\n') : 'Texto não encontrado.');
-  };
-
-  const startRecognition = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.onresult = (event) => {
-      const text = event.results[0][0].transcript;
-      setTranscript(text);
-    };
-    recognition.start();
   };
 
   return (
