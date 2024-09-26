@@ -35,12 +35,12 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-600">
-      <h1 className="text-3xl font-bold mb-5">Reconhecimento de Voz da Bíblia</h1>
+    <div className="flex flex-col items-center justify-start h-screen bg-gray-600">
+      <h1 className="text-2xl font-bold  text-center my-20">Reconhecimento de <br /> Voz da Bíblia</h1>
       <div className="text-lg mb-3">Transcrição:</div>
-      <p className="border p-4 rounded-lg shadow-lg bg-white">{transcript}</p>
+      <p className="border p-4 rounded-lg shadow-lg bg-gray-700 w-[80%]">{transcript}</p>
       <div className="text-lg mt-5">Resultado da Busca:</div>
-      <p className="border p-4 rounded-lg shadow-lg bg-white">{result}</p>
+      <p className="border p-4 rounded-lg shadow-lg bg-gray-700 w-[80%]">{result}</p>
       <button 
         onClick={startRecognition}
         className="fixed bottom-5 left-1/2 transform -translate-x-1/2 p-4 bg-blue-500 rounded-full shadow-lg transition duration-300 hover:bg-blue-600"
