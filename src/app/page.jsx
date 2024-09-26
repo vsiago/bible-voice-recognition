@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useState } from 'react';
+import { MicrophoneIcon } from '@heroicons/react/24/outline'; // Importação correta para v2
 
 export default function Home() {
   const [transcript, setTranscript] = useState('');
@@ -7,10 +8,9 @@ export default function Home() {
   const [result, setResult] = useState('');
 
   useEffect(() => {
-    // Carregar o texto da Bíblia do JSON
     fetch('/bible.json')
       .then((response) => response.json())
-      .then((data) => setBibleText(data.map(item => item.verse)));
+      .then((data) => setBibleText(data));
   }, []);
 
   useEffect(() => {
@@ -20,8 +20,8 @@ export default function Home() {
   }, [transcript]);
 
   const searchInBible = (transcript) => {
-    const found = bibleText.find(verse => verse.toLowerCase().includes(transcript.toLowerCase()));
-    setResult(found ? `Encontrado: "${found}"` : 'Texto não encontrado.');
+    const found = bibleText.find(entry => entry.text.toLowerCase().includes(transcript.toLowerCase()));
+    setResult(found ? `Encontrado: ${found.book} ${found.chapter}:${found.verse} - "${found.text}"` : 'Texto não encontrado.');
   };
 
   const startRecognition = () => {
@@ -35,13 +35,18 @@ export default function Home() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Reconhecimento de Voz</h1>
-      <button onClick={startRecognition}>Iniciar Reconhecimento</button>
-      <h2>Transcrição:</h2>
-      <p>{transcript}</p>
-      <h2>Resultado da Busca:</h2>
-      <p>{result}</p>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-600">
+      <h1 className="text-3xl font-bold mb-5">Reconhecimento de Voz da Bíblia</h1>
+      <div className="text-lg mb-3">Transcrição:</div>
+      <p className="border p-4 rounded-lg shadow-lg bg-white">{transcript}</p>
+      <div className="text-lg mt-5">Resultado da Busca:</div>
+      <p className="border p-4 rounded-lg shadow-lg bg-white">{result}</p>
+      <button 
+        onClick={startRecognition}
+        className="fixed bottom-5 left-1/2 transform -translate-x-1/2 p-4 bg-blue-500 rounded-full shadow-lg transition duration-300 hover:bg-blue-600"
+      >
+        <MicrophoneIcon className="h-8 w-8 text-white" />
+      </button>
     </div>
   );
 }
